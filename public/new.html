@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ask a Question</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1><a href="/">🕊️ Theology Q&A</a></h1>
+  </header>
+  <main>
+    <h2>Ask a New Question</h2>
+    <form id="askForm">
+      <label>Title</label>
+      <input type="text" name="title" required />
+
+      <label>Body (Markdown supported)</label>
+      <textarea name="body" rows="8" required></textarea>
+
+      <label>Tags (comma separated)</label>
+      <input type="text" name="tags" placeholder="e.g. Bible, Ethics, Theology" />
+
+      <button type="submit">Post</button>
+    </form>
+    <p id="status"></p>
+  </main>
+
+  <script>
+    document.getElementById('askForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const title = form.title.value.trim();
+      const body = form.body.value.trim();
+      const tags = form.tags.value.split(',').map(t => t.trim()).filter(Boolean);
+      const res = await fetch('/api/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, body, tags })
+      });
+      const data = await res.json();
+      if (data.success) {
+        form.reset();
+        document.getElementById('status').textContent = '✅ Question posted!';
+      } else {
+        document.getElementById('status').textContent = '❌ Failed to post.';
+      }
+    });
+  </script>
+</body>
+</html>

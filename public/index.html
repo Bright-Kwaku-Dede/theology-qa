@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theology Q&A</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>🕊️ Theology & Philosophy Q&A</h1>
+    <nav><a href="new.html">Ask a Question</a></nav>
+  </header>
+
+  <main>
+    <h2>Recent Questions</h2>
+    <div id="questions"></div>
+  </main>
+
+<script>
+let allQuestions = [];
+
+async function loadQuestions() {
+  const res = await fetch('/api/questions');
+  allQuestions = await res.json();
+  displayQuestions(allQuestions);
+}
+
+// Display questions function
+function displayQuestions(questions) {
+  const container = document.getElementById('questions');
+  container.innerHTML = questions.map(q => `
+    <article class="card">
+      <h3><a href="question.html?id=${q.id}">${q.title}</a></h3>
+      <p class="tags">${(q.tags || '').split(',').map(t => `<span class="tag" onclick="filterByTag('${t}')">${t}</span>`).join(' ')}</p>
+      <p class="date">${new Date(q.created_at).toLocaleString()}</p>
+    </article>
+  `).join('');
+}
+
+// Filter questions by tag
+function filterByTag(tag) {
+  const filtered = allQuestions.filter(q => (q.tags || '').split(',').includes(tag));
+  displayQuestions(filtered);
+  showClearFilter();
+}
+
+// Show "Show All" button
+function showClearFilter() {
+  // Remove existing button if present
+  const existingButton = document.getElementById('clearFilterBtn');
+  if (existingButton) existingButton.remove();
+
+  // Create new button
+  const container = document.getElementById('questions');
+  const button = document.createElement('button');
+  button.id = 'clearFilterBtn';
+  button.textContent = 'Show All';
+  button.onclick = () => {
+    displayQuestions(allQuestions);
+    button.remove();
+  };
+  container.parentNode.insertBefore(button, container);
+}
+
+// Load questions on page load
+loadQuestions();
+</script>
+
+
+</body>
+</html>
