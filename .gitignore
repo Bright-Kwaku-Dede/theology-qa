@@ -13,3 +13,8 @@ node_modules/
 # OS files
 .DS_Store
 Thumbs.db
+
+# IDE / Editor files
+.idea/
+.vscode/
+
